@@ -1,0 +1,62 @@
+* {
+  font-family: JetBrainsMono Nerd Font;
+  font-size: 10px;
+  min-height: 0;
+  color: #908caa;
+}
+
+window#waybar {
+  background: #232136;
+  border-bottom: 1px solid #2a273f;
+}
+
+/* Fix because padding was not being applied with window#waybar */
+.modules-left {
+  margin-left: 8px;
+}
+
+.modules-right {
+  margin-right: 8px;
+}
+
+/* Spacing */
+#workspaces button,
+#network,
+#clock,
+#pulseaudio,
+#battery {
+  padding: 0px 8px;
+}
+
+#workspaces {
+  border: 1px solid transparent;
+  border-radius: 4px;
+  padding: 6px;
+}
+
+/* For some reason the color only works if i use this */
+#workspaces button.active * {
+  color: #eb6f92;
+}
+
+#workspaces button:hover {
+  box-shadow: none;
+  /* Remove predefined box-shadow */
+  text-shadow: none;
+  /* Remove predefined text-shadow */
+  background: #44415a;
+  /* Remove predefined background color (white) */
+  transition: none;
+  /* Disable predefined animations */
+  border: none;
+
+}
+
+#custom-arch-icon {
+  font-size: 13px;
+  padding: 0 4px;
+}
+
+tooltip {
+  background: #232136
+}

@@ -1,0 +1,127 @@
+{
+  // Settings
+  "spacing": 8,
+  "layer": "top",
+  "position": "top",
+  "height": 10,
+  "reload_style_on_change": true,
+  // Modules
+  "modules-left": [
+    "custom/arch-icon",
+    "hyprland/workspaces",
+    "hyprland/window"
+  ],
+  "modules-center": [],
+  "modules-right": [
+    "pulseaudio",
+    "network",
+    "clock",
+    "battery"
+  ],
+  // Modules settings
+  "custom/arch-icon": {
+    "format": "",
+    "on-click-left": "hyprctl dispatch workspace 1"
+  },
+  "hyprland/workspaces": {
+    "format": "{icon} <span font_size=\"x-small\" rise=\"1pt\">-></span> {windows}",
+    "window-rewrite-default": " ",
+    "window-rewrite": {
+      "class<kitty>": "󰄛 ",
+      "class<kitty> title<tmux.*>": "󰙀 ", // Catch everything that starts with tmux, no matter what cames next
+      "class<kitty> title<nvim.*>": "󰈮 ", // Catch everything that starts with nvim, no matter what cames next
+      "class<kitty> title<lf.*>": "󰉋 ", // Catch everything that starts with lf, no matter what cames next
+      "class<firefox>": "󰈹 ",
+      "class<Spotify>": "󰓇 ",
+      "class<discord>": "󰙯 ",
+      "class<1Password>": "󱦚 ",
+      "class<steam>": "󰓓 ",
+      "class<steam_app.*>": " ",
+      "class<com.usebottles.bottles>": "󱄮 ",
+      "class<lutris>": " ",
+      "class<Gimp.*>": " ",
+      "class<VirtualBox Manager>": "󰢔 ",
+      "class<VirtualBox Machine>": "󰹑 ",
+      "class<VirtualBox Machine> title<Windows.*>": "󰖳 ",
+      "class<libreoffice.*>": "󰈙 ",
+      "class<beekeeper-studio>": "󰆼 ",
+      "class<Insomnia>": "󰘯 "
+    }
+  },
+  "hyprland/window": {
+    "max-length": 40
+  },
+  "network": {
+    "interval": 1,
+    "format": "{icon}",
+    "format-alt": "{ipaddr}/{cidr} {icon}",
+    "format-alt-click": "click-right",
+    "format-icons": {
+      "wifi": [
+        "󰤟",
+        "󰤢",
+        "󰤥",
+        "󰤨"
+      ],
+      "ethernet": [
+        "󰈀"
+      ],
+      "disconnected": [
+        "󰪎"
+      ]
+    },
+    "on-click": "kitty -e nmtui",
+    "tooltip": false
+  },
+  "clock": {
+    "interval": 1,
+    "format": "<span text_transform=\"capitalize\">{:%a, %d %b %Y %R}</span>",
+    "format-alt": "<span text_transform=\"capitalize\">{:%a, %d %b %Y %T}</span>",
+    "on-click-right": "kitty --class calcure -e calcure",
+    "tooltip": false
+  },
+  // Pulseaudio
+  "pulseaudio": {
+    "format": "{volume}% {icon}",
+    "format-bluetooth": "{volume}% {icon}",
+    "format-muted": "<span foreground=\"#eb6f92\"> muted</span>",
+    "format-icons": {
+      "headphone": "",
+      "hands-free": "",
+      "headset": "",
+      "phone": "",
+      "portable": "",
+      "car": "",
+      "default": [
+        "",
+        ""
+      ]
+    },
+    "scroll-step": 5,
+    "on-click": "pulsemixer --toggle-mute",
+    "on-click-right": "kitty --class mixer -e pulsemixer",
+    "ignored-sinks": [
+      "Easy Effects Sink"
+    ]
+  },
+  "battery": {
+    //"bat" : "BAT2",
+    "interval": 1,
+    "states": {
+      "warning": 30,
+      "critical": 15
+    },
+    "format": "{capacity}% {icon}",
+    "format-charging": "{capacity}% {icon} 󱐋",
+    "format-plugged": "{capacity}% {icon} <span size:\"x-small\"></span>",
+    "format-full": "{capacity}% {icon} <span size:\"x-small\"></span>",
+    "format-icons": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "max-length": 25
+  }
+}

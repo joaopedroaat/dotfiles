@@ -1,0 +1,18 @@
+# Yazi with yy
+function yy() {
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+	yazi "$@" --cwd-file="$tmp"
+	if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+		builtin cd -- "$cwd"
+	fi
+	rm -f -- "$tmp"
+}
+
+# Set default bat theme
+export BAT_THEME="base16-256"
+
+# Set up oh-my-posh
+eval "$(oh-my-posh init zsh --config ~/.config/ohmyposh/amro.omp.json)"
+
+# Set up fzf key bindings and fuzzy completion
+source <(fzf --zsh)
