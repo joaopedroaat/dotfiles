@@ -1,3 +1,11 @@
+# Neovim aliases
+alias vi=nvim
+alias vim=nvim
+
+# Makes Neovim the default text editor
+export EDITOR=nvim
+export VISUAL=nvim
+
 # Yazi with yy
 function yy() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
