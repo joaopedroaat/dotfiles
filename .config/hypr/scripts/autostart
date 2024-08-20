@@ -1,6 +1,0 @@
-#!/usr/bin/bash
-
-swww-daemon &
-swww img ~/Pictures/bebop.png &
-
-1password --silent &
