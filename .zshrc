@@ -24,3 +24,13 @@ eval "$(oh-my-posh init zsh --config ~/.config/ohmyposh/amro.omp.json)"
 
 # Set up fzf key bindings and fuzzy completion
 source <(fzf --zsh)
+
+# Set up zoxide
+eval "$(zoxide init zsh)"
+alias cd=z
+
+# Add autosuggestions
+source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh
+
+# kitten icat img alias
+alias icat="kitten icat"

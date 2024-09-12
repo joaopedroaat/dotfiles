@@ -1,0 +1,31 @@
+[Unit]
+Description=RClone Mount - %i
+After=network.target
+Wants=network-online.target
+StartLimitIntervalSec=300
+StartLimitBurst=3
+
+[Service]
+Type=simple
+Environment="RCLONE_LOG_LEVEL=INFO"
+Environment="RCLONE_VFS_CACHE_MODE=full"
+Environment="RCLONE_VFS_CACHE_MAX_SIZE=100G"
+Environment="RCLONE_USER_TARGET_DIRECTORY=%h/Remotes/%i"
+Environment="RCLONE_USER_SOURCE_DIRECTORY="
+EnvironmentFile=-%h/.config/systemd/user/env-rclone-mount-%i
+ExecStartPre=/bin/sh -c 'command -v rclone >/dev/null 2>&1 || { echo >&2 "rclone is required but not installed. Aborting."; exit 1; }'
+ExecStartPre=/bin/sh -c 'if ! /usr/bin/rclone listremotes | grep -q "^%i:$"; then echo "Remote %i does not exist"; exit 1; fi'
+ExecStartPre=/bin/sh -c 'exec /usr/bin/mkdir -p ${RCLONE_USER_TARGET_DIRECTORY}'
+ExecStart=/bin/sh -c 'exec /usr/bin/rclone \
+    --log-level=${RCLONE_LOG_LEVEL} \
+    --vfs-cache-mode ${RCLONE_VFS_CACHE_MODE} \
+    --vfs-cache-max-size ${RCLONE_VFS_CACHE_MAX_SIZE} \
+    mount %i:${RCLONE_USER_SOURCE_DIRECTORY} ${RCLONE_USER_TARGET_DIRECTORY}'
+ExecStop=/bin/sh -c 'exec /usr/bin/fusermount3 -uz ${RCLONE_USER_TARGET_DIRECTORY}'
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target

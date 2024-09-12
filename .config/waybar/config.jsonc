@@ -32,8 +32,11 @@
       "class<kitty> title<nvim.*>": "󰈮 ", // Catch everything that starts with nvim, no matter what cames next
       "class<kitty> title<lf.*>": "󰉋 ", // Catch everything that starts with lf, no matter what cames next
       "class<firefox>": "󰈹 ",
+      "class<zen.*>": "󰈹 ",
       "class<Spotify>": "󰓇 ",
+      "class<mixer>": "󰗅 ",
       "class<discord>": "󰙯 ",
+      "class<vesktop>": "󰙯 ",
       "class<1Password>": "󱦚 ",
       "class<steam>": "󰓓 ",
       "class<steam_app.*>": " ",
