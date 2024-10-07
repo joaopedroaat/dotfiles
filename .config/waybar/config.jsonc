@@ -9,19 +9,14 @@
   "modules-left": [
     "custom/arch-icon",
     "hyprland/workspaces",
-    "hyprland/window"
+    "hyprland/window",
   ],
   "modules-center": [],
-  "modules-right": [
-    "pulseaudio",
-    "network",
-    "clock",
-    "battery"
-  ],
+  "modules-right": ["pulseaudio", "network", "clock", "battery"],
   // Modules settings
   "custom/arch-icon": {
     "format": "",
-    "on-click-left": "hyprctl dispatch workspace 1"
+    "on-click-left": "hyprctl dispatch workspace 1",
   },
   "hyprland/workspaces": {
     "format": "{icon} <span font_size=\"x-small\" rise=\"1pt\">-></span> {windows}",
@@ -48,11 +43,12 @@
       "class<VirtualBox Machine> title<Windows.*>": "󰖳 ",
       "class<libreoffice.*>": "󰈙 ",
       "class<beekeeper-studio>": "󰆼 ",
-      "class<Insomnia>": "󰘯 "
-    }
+      "class<Insomnia>": "󰘯 ",
+      "class<obsidian>": "󰠮 ",
+    },
   },
   "hyprland/window": {
-    "max-length": 40
+    "max-length": 40,
   },
   "network": {
     "interval": 1,
@@ -60,28 +56,19 @@
     "format-alt": "{ipaddr}/{cidr} {icon}",
     "format-alt-click": "click-right",
     "format-icons": {
-      "wifi": [
-        "󰤟",
-        "󰤢",
-        "󰤥",
-        "󰤨"
-      ],
-      "ethernet": [
-        "󰈀"
-      ],
-      "disconnected": [
-        "󰪎"
-      ]
+      "wifi": ["󰤟", "󰤢", "󰤥", "󰤨"],
+      "ethernet": ["󰈀"],
+      "disconnected": ["󰪎"],
     },
     "on-click": "kitty -e nmtui",
-    "tooltip": false
+    "tooltip": false,
   },
   "clock": {
     "interval": 1,
     "format": "<span text_transform=\"capitalize\">{:%a, %d %b %Y %R}</span>",
     "format-alt": "<span text_transform=\"capitalize\">{:%a, %d %b %Y %T}</span>",
     "on-click-right": "kitty --class calcure -e calcure",
-    "tooltip": false
+    "tooltip": false,
   },
   // Pulseaudio
   "pulseaudio": {
@@ -95,36 +82,25 @@
       "phone": "",
       "portable": "",
       "car": "",
-      "default": [
-        "",
-        ""
-      ]
+      "default": ["", ""],
     },
     "scroll-step": 5,
     "on-click": "pulsemixer --toggle-mute",
     "on-click-right": "kitty --class mixer -e pulsemixer",
-    "ignored-sinks": [
-      "Easy Effects Sink"
-    ]
+    "ignored-sinks": ["Easy Effects Sink"],
   },
   "battery": {
     //"bat" : "BAT2",
     "interval": 1,
     "states": {
       "warning": 30,
-      "critical": 15
+      "critical": 15,
     },
     "format": "{capacity}% {icon}",
     "format-charging": "{capacity}% {icon} 󱐋",
     "format-plugged": "{capacity}% {icon} <span size:\"x-small\"></span>",
     "format-full": "{capacity}% {icon} <span size:\"x-small\"></span>",
-    "format-icons": [
-      "",
-      "",
-      "",
-      "",
-      ""
-    ],
-    "max-length": 25
-  }
+    "format-icons": ["", "", "", "", ""],
+    "max-length": 25,
+  },
 }
