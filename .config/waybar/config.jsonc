@@ -12,11 +12,23 @@
     "hyprland/window",
   ],
   "modules-center": [],
-  "modules-right": ["pulseaudio", "network", "clock", "battery"],
+  "modules-right": [
+    "custom/color-picker",
+    "pulseaudio",
+    "network",
+    "clock",
+    "battery",
+  ],
   // Modules settings
   "custom/arch-icon": {
     "format": "",
-    "on-click-left": "hyprctl dispatch workspace 1",
+    "on-click": "hyprctl dispatch workspace 1",
+    "tooltip": false,
+  },
+  "custom/color-picker": {
+    "format": "󰸱",
+    "on-click": "hyprpicker -a",
+    "tooltip": false,
   },
   "hyprland/workspaces": {
     "format": "{icon} <span font_size=\"x-small\" rise=\"1pt\">-></span> {windows}",

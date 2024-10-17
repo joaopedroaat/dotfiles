@@ -49,14 +49,14 @@ window#waybar {
   transition: none;
   /* Disable predefined animations */
   border: none;
-
 }
 
-#custom-arch-icon {
+#custom-arch-icon,
+#custom-color-picker {
   font-size: 13px;
   padding: 0 4px;
 }
 
 tooltip {
-  background: #232136
+  background: #232136;
 }
