@@ -2,29 +2,43 @@
 
 # Source global definitions
 if [ -f /etc/bashrc ]; then
-    . /etc/bashrc
+  . /etc/bashrc
 fi
 
-# User specific environment
-if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]; then
-    PATH="$HOME/.local/bin:$HOME/bin:$PATH"
-fi
+# Prompt
+export PS1="[\u@\h \w]\$ "
+
+# Path function
+add_to_path() {
+  if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
+    export PATH="$1:$PATH"
+  fi
+}
+
+# Local bin
+add_to_path "$HOME/.local/bin"
+
+# Fast Node Manager
+FNM_PATH="/home/joaopedroaat/.local/share/fnm"
+add_to_path "$FNM_PATH"
+eval "$(fnm env --use-on-cd --shell bash)"
 
 # Go
-GOPATH=$(go env GOPATH)
-PATH="$PATH:$GOPATH/bin"
+GOPATH="$HOME/go"
+add_to_path "$GOPATH/bin"
 
-export PATH
-
-# Uncomment the following line if you don't like systemctl's auto-paging feature:
-# export SYSTEMD_PAGER=
-
-# User specific aliases and functions
-if [ -d ~/.bashrc.d ]; then
-    for rc in ~/.bashrc.d/*; do
-        if [ -f "$rc" ]; then
-            . "$rc"
-        fi
-    done
+# Tmux sessionizer
+if command -v tmux-sessionizer >/dev/null 2>&1; then
+  bind '"\C-f": "\C-utmux-sessionizer\n"'
 fi
-unset rc
+
+# Fzf Integration
+if command -v fzf >/dev/null 2>&1; then
+  eval "$(fzf --bash)"
+fi
+
+# Bash completion
+[[ $PS1 &&
+  ! ${BASH_COMPLETION_VERSINFO:-} &&
+  -f /usr/share/bash-completion/bash_completion ]] &&
+  . /usr/share/bash-completion/bash_completion
