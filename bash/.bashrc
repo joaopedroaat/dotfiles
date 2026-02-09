@@ -42,3 +42,4 @@ fi
   ! ${BASH_COMPLETION_VERSINFO:-} &&
   -f /usr/share/bash-completion/bash_completion ]] &&
   . /usr/share/bash-completion/bash_completion
+. "$HOME/.cargo/env"
