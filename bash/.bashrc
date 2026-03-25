@@ -1,6 +1,7 @@
 # .bashrc
 
 # --- System & Prompt ---
+# Load system-wide bashrc if it exists
 if [ -f /etc/bashrc ]; then
   . /etc/bashrc
 fi
@@ -8,30 +9,49 @@ fi
 export PS1="[\u@\h \w]\$ "
 
 # --- Path Helpers ---
+# Function to safely add directories to PATH without duplication
 add_to_path() {
   if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
     export PATH="$1:$PATH"
   fi
 }
 
+# Add local binaries to PATH
 add_to_path "$HOME/.local/bin"
-add_to_path "$HOME/.local/share/fnm"
-add_to_path "$HOME/go/bin"
+
+# --- Homebrew Setup ---
+# Homebrew must be loaded early so other tools (fnm, fzf) can be detected
+if [ -f "/home/linuxbrew/.linuxbrew/bin/brew" ]; then
+  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv bash)"
+fi
+
+# --- Language Runtimes ---
+# Only add Go binaries to PATH if the Go compiler is installed
+if command -v go >/dev/null 2>&1; then
+  add_to_path "$HOME/go/bin"
+fi
+
+# Load Cargo (Rust) environment if present
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
 
 # --- Tools Integration ---
+# Initialize fnm (Fast Node Manager)
 if command -v fnm >/dev/null 2>&1; then
   eval "$(fnm env --use-on-cd --shell bash)"
 fi
 
+# Initialize fzf (Command-line fuzzy finder)
 if command -v fzf >/dev/null 2>&1; then
   eval "$(fzf --bash)"
 fi
 
+# Keybinding for tmux-sessionizer (Ctrl-f)
 if command -v tmux-sessionizer >/dev/null 2>&1; then
   bind '"\C-f": "\C-utmux-sessionizer\n"'
 fi
 
 # --- Aliases ---
+# Enable color support for common commands
 if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
     alias ls='ls --color=auto'
@@ -40,14 +60,8 @@ if [ -x /usr/bin/dircolors ]; then
     alias egrep='egrep --color=auto'
 fi
 
-# --- Language Runtimes ---
-[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
-
-if [ -f "/home/linuxbrew/.linuxbrew/bin/brew" ]; then
-  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv bash)"
-fi
-
 # --- SSH Agent ---
+# Ensure a single SSH agent instance persists across shell sessions
 if [ -f "$HOME/.ssh/agent.env" ]; then
   . "$HOME/.ssh/agent.env" > /dev/null
 fi
@@ -58,5 +72,6 @@ if ! ps -p "$SSH_AGENT_PID" > /dev/null 2>&1; then
 fi
 
 # --- Autocompletion ---
+# Enable programmable completion features
 [[ $PS1 && ! ${BASH_COMPLETION_VERSINFO:-} && -f /usr/share/bash-completion/bash_completion ]] && \
   . /usr/share/bash-completion/bash_completion
