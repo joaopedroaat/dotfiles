@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Directories to scan
+# Directories to scan for projects or configurations
 dirs_to_check=(
     "$HOME"
     "$HOME/Projects"
@@ -19,17 +19,27 @@ if [[ $# -eq 1 ]]; then
     selected=$1
 else
     [[ ${#search_dirs[@]} -eq 0 ]] && echo "No valid directories found." && exit 1
-    selected=$(find -L "${search_dirs[@]}" -maxdepth 1 -type d | sort -u | fzf)
+    # List active sessions first, then append directories so sessions appear at the top
+    selected=$( (
+        tmux list-sessions -F " #{session_name}" 2>/dev/null
+        find -L "${search_dirs[@]}" -maxdepth 1 -type d | sort -u
+    ) | fzf )
 fi
 
 [[ -z $selected ]] && exit 0
 
-# Sanitize session name: get folder name and replace dots with underscores
-selected_name=$(basename "$selected" | tr . _)
+# Handle active session selection vs directory selection
+if [[ "$selected" == *" "* ]]; then
+    # Extract session name by stripping the icon and space
+    selected_name=${selected#* }
+else
+    # Sanitize session name: get folder name and replace dots with underscores
+    selected_name=$(basename "$selected" | tr . _)
 
-# Create the session in the background if it doesn't already exist
-if ! tmux has-session -t="$selected_name" 2> /dev/null; then
-    tmux new-session -ds "$selected_name" -c "$selected"
+    # Create the session in the background if it doesn't already exist
+    if ! tmux has-session -t="$selected_name" 2> /dev/null; then
+        tmux new-session -ds "$selected_name" -c "$selected"
+    fi
 fi
 
 # If outside tmux, attach to the session; if inside, switch the client
