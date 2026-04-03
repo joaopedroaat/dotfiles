@@ -19,11 +19,16 @@ if [[ $# -eq 1 ]]; then
     selected=$1
 else
     [[ ${#search_dirs[@]} -eq 0 ]] && echo "No valid directories found." && exit 1
+    fzf_opts=()
+    if [[ -z "$TMUX" ]]; then
+        fzf_opts=(--height 60% --layout reverse --border rounded --margin 5%,10%)
+    fi
+
     # List active sessions first, then append directories so sessions appear at the top
     selected=$( (
         tmux list-sessions -F " #{session_name}" 2>/dev/null
         find -L "${search_dirs[@]}" -maxdepth 1 -type d | sort -u
-    ) | fzf )
+    ) | fzf "${fzf_opts[@]}" )
 fi
 
 [[ -z $selected ]] && exit 0
