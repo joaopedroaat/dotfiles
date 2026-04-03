@@ -1,32 +1,40 @@
 #!/usr/bin/env bash
 
-search_dirs=(
-  $HOME
-  $HOME/Projects
-  $HOME/.local/bin
-  $HOME/.config
+# Directories to scan
+dirs_to_check=(
+    "$HOME"
+    "$HOME/Projects"
+    "$HOME/.local/bin"
+    "$HOME/.config"
 )
 
+# Filter out non-existent directories to prevent find errors
+search_dirs=()
+for dir in "${dirs_to_check[@]}"; do
+    [[ -d "$dir" ]] && search_dirs+=("$dir")
+done
+
+# Use first argument as path, otherwise launch fzf
 if [[ $# -eq 1 ]]; then
     selected=$1
 else
+    [[ ${#search_dirs[@]} -eq 0 ]] && echo "No valid directories found." && exit 1
     selected=$(find -L "${search_dirs[@]}" -maxdepth 1 -type d | sort -u | fzf)
 fi
 
-if [[ -z $selected ]]; then
-    exit 0
-fi
+[[ -z $selected ]] && exit 0
 
+# Sanitize session name: get folder name and replace dots with underscores
 selected_name=$(basename "$selected" | tr . _)
-tmux_running=$(pgrep tmux)
 
-if [[ -z $TMUX ]] && [[ -z $tmux_running ]]; then
-    tmux new-session -s $selected_name -c $selected
-    exit 0
+# Create the session in the background if it doesn't already exist
+if ! tmux has-session -t="$selected_name" 2> /dev/null; then
+    tmux new-session -ds "$selected_name" -c "$selected"
 fi
 
-if ! tmux has-session -t=$selected_name 2> /dev/null; then
-    tmux new-session -ds $selected_name -c $selected
+# If outside tmux, attach to the session; if inside, switch the client
+if [[ -z $TMUX ]]; then
+    tmux attach-session -t "$selected_name"
+else
+    tmux switch-client -t "$selected_name"
 fi
-
-tmux switch-client -t $selected_name
