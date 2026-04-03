@@ -57,8 +57,8 @@ fi
 # Keybinding for tmux-sessionizer (Ctrl-f)
 if command -v tmux-sessionizer >/dev/null 2>&1; then
   if [[ -n "$TMUX" ]]; then
-    # Inside tmux: clear line and call tmux popup
-    bind '"\C-f": "\C-utmux display-popup -w 80% -h 60% -E tmux-sessionizer\n"'
+    # Inside tmux: call the custom command we defined in tmux.conf
+    bind '"\C-f": "\C-utmux sessionizer\n"'
   else
     # Outside tmux: clear line and run normally
     bind '"\C-f": "\C-utmux-sessionizer\n"'
