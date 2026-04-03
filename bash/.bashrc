@@ -35,9 +35,18 @@ fi
 [ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
 
 # --- Tools Integration ---
+
 # Initialize fnm (Fast Node Manager)
+FNM_PATH="$HOME/.local/share/fnm"
+
+# Add fnm to PATH
+if [ -d "$FNM_PATH" ]; then
+  add_to_path "$FNM_PATH"
+fi
+
+# Initialize fnm environment once with desired flags
 if command -v fnm >/dev/null 2>&1; then
-  eval "$(fnm env --use-on-cd --shell bash)"
+  eval "$(fnm env --shell bash)"
 fi
 
 # Initialize fzf (Command-line fuzzy finder)
@@ -75,3 +84,4 @@ fi
 # Enable programmable completion features
 [[ $PS1 && ! ${BASH_COMPLETION_VERSINFO:-} && -f /usr/share/bash-completion/bash_completion ]] && \
   . /usr/share/bash-completion/bash_completion
+
