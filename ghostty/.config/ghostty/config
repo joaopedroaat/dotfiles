@@ -1,3 +1,2 @@
-font-family = BigBlueTerm437 Nerd Font
-theme = GruvboxDark
-cursor-invert-fg-bg = true
+font-family = JetBrainsMono Nerd Font
+theme = light:Rose Pine Dawn,dark:Rose Pine
