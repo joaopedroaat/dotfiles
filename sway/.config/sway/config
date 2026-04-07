@@ -35,8 +35,8 @@ exec darkman run
 
 ### Output configuration
 #
-# Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
-output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
+# Try to use sway-bg-selector, fallback to default sway wallpaper
+exec_always "which sway-bg-selector > /dev/null && sway-bg-selector --restore || swaymsg 'output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill'"
 #
 # Example configuration:
 #
@@ -91,6 +91,9 @@ output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
     # Notifications
     bindsym $mod+Shift+n exec makoctl dismiss
     bindsym $mod+Control+n exec makoctl restore
+
+# Update this line in your Sway config:
+bindsym $mod+Shift+b exec "which sway-bg-selector > /dev/null && ghostty --title='Wallpaper Selector' -e sway-bg-selector"
 
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.
@@ -232,6 +235,20 @@ bindsym $mod+r mode "resize"
 
     # Toggle between dark and light mode manually
     bindsym $mod+t exec darkman toggle
+
+#
+# Window Rules
+#
+
+# Update your Window Rules section:
+for_window [title="Wallpaper Selector"] {
+    floating enable
+    sticky enable
+    border pixel 2
+    resize set 800 600
+    move position center
+    focus
+}
 
 
 #

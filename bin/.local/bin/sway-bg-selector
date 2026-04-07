@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+
+# --- Configuration ---
+STATE_FILE="$HOME/.cache/swaybg_path"
+# Add or remove directories here as needed
+WALLPAPER_DIRS=(
+  "$HOME/Pictures"
+  "$HOME/Downloads"
+)
+
+# --- Functions ---
+
+# Sends a desktop notification unless SILENT is true
+send_notification() {
+  local title=$1
+  local message=$2
+  local icon=$3
+  if [[ "$SILENT" != "true" ]]; then
+    if command -v notify-send >/dev/null 2>&1; then
+      notify-send "$title" "$message" -i "${icon:-image-x-generic}" -a "SwayBG"
+    fi
+  fi
+}
+
+# Sets the wallpaper and ensures the process persists
+set_wallpaper() {
+  local img_path=$1
+  if [[ -f "$img_path" ]]; then
+    # 1. Kill old swaybg process
+    pkill swaybg >/dev/null 2>&1
+
+    # 2. Launch swaybg with nohup
+    # nohup + & + redirection ensures it survives terminal closure
+    nohup swaybg -i "$img_path" -m fill >/dev/null 2>&1 &
+
+    # 3. Save choice for the --restore flag
+    echo "$img_path" >"$STATE_FILE"
+
+    send_notification "Wallpaper Updated" "Now showing: $(basename "$img_path")" "$img_path"
+  else
+    send_notification "Wallpaper Error" "File not found: $img_path" "dialog-error"
+    exit 1
+  fi
+}
+
+# --- Logic ---
+
+# Handle the --restore argument for session startup (Silent)
+if [[ "$1" == "--restore" ]]; then
+  if [[ -f "$STATE_FILE" ]]; then
+    SILENT="true"
+    set_wallpaper "$(cat "$STATE_FILE")"
+    exit 0
+  else
+    exit 1
+  fi
+fi
+
+# 1. Selection UI using fzf
+# Optimized for Ghostty using kitty icat
+SELECTED=$(find "${WALLPAPER_DIRS[@]}" -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" \) 2>/dev/null |
+  fzf --prompt="󰸉 Select Wallpaper: " \
+    --height=95% \
+    --layout=reverse \
+    --border=rounded \
+    --margin=1 \
+    --padding=1 \
+    --info=inline \
+    --ansi \
+    --color="border:#7aa2f7,label:#7aa2f7,prompt:#7aa2f7" \
+    --preview='kitty icat --stdin=no --transfer-mode=memory --clear --place=${FZF_PREVIEW_COLUMNS}x${FZF_PREVIEW_LINES}@0x0 {}' \
+    --preview-window="top:70%:border-rounded:nowrap")
+
+# Apply selection if one was made
+if [[ -n "$SELECTED" ]]; then
+  set_wallpaper "$SELECTED"
+  # Wait briefly for swaybg to handshake with the compositor
+  sleep 0.2
+else
+  # Only run the heavy graphics cleanup if we didn't just set a wallpaper.
+  # This prevents the "black flash" caused by race conditions.
+  if command -v kitty >/dev/null 2>&1; then
+    kitty icat --clear --stdin=no >/dev/null 2>&1
+  fi
+fi

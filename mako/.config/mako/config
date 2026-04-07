@@ -5,6 +5,7 @@ include=~/.config/mako/theme_current
 ## --- Mako Configuration ---
 max-history=100
 sort=-time
+default-timeout=8000
 
 # --- Structural Style (Minimal & Sharp) ---
 font=monospace 10
