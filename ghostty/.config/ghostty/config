@@ -1,2 +1,4 @@
 font-family = JetBrainsMono Nerd Font
 theme = light:Rose Pine Dawn,dark:Rose Pine
+gtk-single-instance = true
+quit-after-last-window-closed = false

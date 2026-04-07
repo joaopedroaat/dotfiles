@@ -22,6 +22,11 @@ set $term ghostty
 # Your preferred application launcher
 set $menu wmenu-run
 
+### Bootstrap
+
+# Setup first ghostty instance
+exec ghostty --initial-window=false
+
 ### Output configuration
 #
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
