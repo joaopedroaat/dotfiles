@@ -1,13 +1,29 @@
 #!/bin/sh
 
 ### --- Configuration & Theme ---
-CONFIG_PATH="$HOME/.config/sway/config.d/01_theme.conf"
+# Point this to the symlink that the switcher script manages
+THEME_FILE="$HOME/.config/sway/theme_current.conf"
 
-# Extract hex colors from Sway configuration
+# Extract hex colors with a fallback if the file or variable is missing
 get_color() {
-  grep -i "set \$$1" "$CONFIG_PATH" | awk '{print $3}' | head -n 1
+  # 1. Try to get the color from the theme file
+  # 2. If empty or file missing, return a hardcoded fallback (Rosé Pine Dark defaults)
+  color=$(grep -i "set \$$1" "$THEME_FILE" 2>/dev/null | awk '{print $3}' | head -n 1)
+
+  if [ -z "$color" ]; then
+    case "$1" in
+    "text") echo "#e0def4" ;;
+    "love") echo "#eb6f92" ;;
+    "gold") echo "#f6c177" ;;
+    "muted") echo "#6e6a86" ;;
+    *) echo "#ffffff" ;;
+    esac
+  else
+    echo "$color"
+  fi
 }
 
+# Source the colors
 COLOR_TEXT=$(get_color "text")
 COLOR_ALERT=$(get_color "love")
 COLOR_WARN=$(get_color "gold")
