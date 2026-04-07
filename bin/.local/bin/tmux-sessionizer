@@ -38,8 +38,13 @@ if [[ "$selected" == *" "* ]]; then
     # Extract session name by stripping the icon and space
     selected_name=${selected#* }
 else
-    # Sanitize session name: get folder name and replace dots with underscores
-    selected_name=$(basename "$selected" | tr . _)
+    # Check if the selected path is the home directory
+    if [[ "$selected" == "$HOME" ]]; then
+        selected_name="home"
+    else
+        # Sanitize session name: get folder name and replace dots with underscores
+        selected_name=$(basename "$selected" | tr . _)
+    fi
 
     # Create the session in the background if it doesn't already exist
     if ! tmux has-session -t="$selected_name" 2> /dev/null; then
