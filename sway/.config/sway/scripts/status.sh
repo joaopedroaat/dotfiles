@@ -65,29 +65,38 @@ get_ram() {
 
 # Returns formatted Network string with WiFi signal strength logic
 get_net() {
-  if grep -q "1" /sys/class/net/e*/carrier 2>/dev/null; then
-    echo "󰈀 Wired"
+  # Check for Ethernet (e*)
+  eth_iface=$(ls /sys/class/net | grep '^e' | head -n 1)
+  if [ -n "$eth_iface" ] && grep -q "1" "/sys/class/net/$eth_iface/carrier" 2>/dev/null; then
+    echo "󰈀 $eth_iface"
     return
   fi
 
-  interface=$(ls /sys/class/net | grep '^w' | head -n 1)
-  ssid=$(iwctl station list | grep "connected" | awk '{print $2}')
+  # Extract Interface and Signal Strength for active Wi-Fi
+  # nmcli -t -f active,device,signal dev wifi returns: yes:wlan0:85
+  net_data=$(nmcli -t -f active,device,signal dev wifi | grep '^yes' | head -n 1)
 
-  if [ -n "$ssid" ] && [ -n "$interface" ]; then
-    rssi=$(iwctl station "$interface" show | grep "AverageRSSI" | awk '{print $2}')
-    [ -z "$rssi" ] && rssi=$(iwctl station "$interface" show | grep "RSSI" | awk '{print $2}')
+  if [ -n "$net_data" ]; then
+    iface=$(echo "$net_data" | cut -d: -f2)
+    signal=$(echo "$net_data" | cut -d: -f3)
 
-    if [ "$rssi" -ge -50 ]; then
+    # Convert 0-100 signal to dBm approximation
+    rssi=$(((signal / 2) - 100))
+
+    # Icon mapping
+    if [ "$signal" -ge 80 ]; then
       icon="󰤨"
-    elif [ "$rssi" -ge -60 ]; then
+    elif [ "$signal" -ge 60 ]; then
       icon="󰤥"
-    elif [ "$rssi" -ge -70 ]; then
+    elif [ "$signal" -ge 40 ]; then
       icon="󰤢"
-    elif [ "$rssi" -ge -80 ]; then
+    elif [ "$signal" -ge 20 ]; then
       icon="󰤟"
-    else icon="󰤭"; fi
+    else
+      icon="󰤭"
+    fi
 
-    echo "$icon $ssid <span foreground='$COLOR_DIM'>(${rssi}dBm)</span>"
+    echo "$icon $iface <span foreground='$COLOR_DIM'>(${rssi}dBm)</span>"
   else
     echo "<span foreground='$COLOR_ALERT'>󰖪 Offline</span>"
   fi
