@@ -15,44 +15,68 @@ COLOR_DIM=$(get_color "muted")
 
 ### --- System Functions ---
 
-# Get CPU load percentage
+# Returns formatted CPU string with icon and color logic
 get_cpu() {
-  top -bn1 | grep "Cpu(s)" | awk '{print 100 - $8"%"}'
+  val=$(top -bn1 | grep "Cpu(s)" | awk '{print 100 - $8}')
+  clr=$COLOR_TEXT
+
+  if [ "$(echo "$val > 80" | bc)" -eq 1 ]; then
+    clr=$COLOR_ALERT
+  fi
+
+  printf " <span foreground='%s'>%0.1f%%</span>" "$clr" "$val"
 }
 
-# Get CPU temperature in Celsius
+# Returns formatted Temperature string with color logic
 get_temp() {
   temp=$(cat /sys/class/thermal/thermal_zone0/temp 2>/dev/null || echo 0)
-  echo $((temp / 1000))
+  temp=$((temp / 1000))
+  clr=$COLOR_DIM
+
+  if [ "$temp" -gt 80 ]; then
+    clr=$COLOR_ALERT
+  elif [ "$temp" -gt 65 ]; then
+    clr=$COLOR_WARN
+  fi
+
+  echo "<span foreground='$clr'>( ${temp}°C)</span>"
 }
 
-# Get used RAM in GiB
+# Returns formatted RAM string with icon and usage-based color logic
 get_ram() {
-  free -m | awk '/Mem:/ { printf "%0.1fGiB", $3/1024 }'
+  # Extract used and total memory in MB
+  mem_data=$(free -m | awk '/Mem:/ {print $3, $2}')
+  used=$(echo "$mem_data" | awk '{print $1}')
+  total=$(echo "$mem_data" | awk '{print $2}')
+
+  # Calculate percentage and GiB usage
+  perc=$((100 * used / total))
+  gib=$(echo "scale=1; $used/1024" | bc)
+
+  clr=$COLOR_TEXT
+  if [ "$perc" -gt 80 ]; then
+    clr=$COLOR_ALERT
+  elif [ "$perc" -gt 65 ]; then
+    clr=$COLOR_WARN
+  fi
+
+  echo " <span foreground='$clr'>${gib}GiB</span>"
 }
 
-# Get Network status, SSID, and RSSI signal strength
+# Returns formatted Network string with WiFi signal strength logic
 get_net() {
-  # Check for Ethernet connection via sysfs
   if grep -q "1" /sys/class/net/e*/carrier 2>/dev/null; then
     echo "󰈀 Wired"
     return
   fi
 
-  # Identify wireless interface
   interface=$(ls /sys/class/net | grep '^w' | head -n 1)
-
-  # Check for WiFi connection via iwd
   ssid=$(iwctl station list | grep "connected" | awk '{print $2}')
 
   if [ -n "$ssid" ] && [ -n "$interface" ]; then
-    # Retrieve RSSI using verified manual command logic
     rssi=$(iwctl station "$interface" show | grep "AverageRSSI" | awk '{print $2}')
-
-    # Fallback if "AverageRSSI" is not found
     [ -z "$rssi" ] && rssi=$(iwctl station "$interface" show | grep "RSSI" | awk '{print $2}')
 
-    # Map RSSI (dBm) to signal icons
     if [ "$rssi" -ge -50 ]; then
       icon="󰤨"
     elif [ "$rssi" -ge -60 ]; then
@@ -71,26 +95,15 @@ get_net() {
 
 ### --- Main Loop ---
 while true; do
-  # Fetch Data
-  CPU=$(get_cpu)
-  TEMP=$(get_temp)
-  RAM=$(get_ram)
-  NET=$(get_net)
-  TIME=$(date +'%d-%m-%Y %H:%M:%S')
+  # Modular Data Acquisition
+  NET_MOD=$(get_net)
+  CPU_MOD=$(get_cpu)
+  TMP_MOD=$(get_temp)
+  RAM_MOD=$(get_ram)
+  TIME_MOD=$(date +'%d-%m-%Y %H:%M:%S')
 
-  # CPU Color Logic
-  CPU_VAL=$(echo "$CPU" | tr -d '%')
-  CPU_CLR=$COLOR_TEXT
-  [ "$(echo "$CPU_VAL > 80" | bc)" -eq 1 ] && CPU_CLR=$COLOR_ALERT
-
-  # Temperature Color Logic
-  TEMP_CLR=$COLOR_TEXT
-  if [ "$TEMP" -gt 80 ]; then
-    TEMP_CLR=$COLOR_ALERT
-  elif [ "$TEMP" -gt 65 ]; then TEMP_CLR=$COLOR_WARN; fi
-
-  # Status Bar Output (Pango Markup)
-  echo "$NET |  <span foreground='$CPU_CLR'>$CPU</span> <span foreground='$COLOR_DIM'>( ${TEMP}°C)</span> |  $RAM |  $TIME "
+  # Status Bar Output
+  echo "$NET_MOD | $CPU_MOD $TMP_MOD | $RAM_MOD |  $TIME_MOD "
 
   sleep 1
 done
