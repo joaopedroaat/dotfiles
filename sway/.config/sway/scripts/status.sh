@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ### --- Configuration ---
-THEME_FILE="$HOME/.config/sway/themes/theme_current.conf"
+THEME_FILE="$HOME/.config/sway/themes/sway_current.conf"
 
 get_color() {
   target_var=$1

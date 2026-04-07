@@ -24,8 +24,14 @@ set $menu wmenu-run
 
 ### Bootstrap
 
-# Setup first ghostty instance
+# 1. Setup first ghostty instance
 exec ghostty --initial-window=false
+
+# 2. Restart Mako
+exec_always pkill mako; mako
+
+# 3. Start darkman (Once per session)
+exec darkman run
 
 ### Output configuration
 #
@@ -81,6 +87,10 @@ output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
 
     # Start your launcher
     bindsym $mod+d exec $menu
+
+    # Notifications
+    bindsym $mod+Shift+n exec makoctl dismiss
+    bindsym $mod+Control+n exec makoctl restore
 
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.
@@ -223,4 +233,12 @@ bindsym $mod+r mode "resize"
     # Toggle between dark and light mode manually
     bindsym $mod+t exec darkman toggle
 
+
+#
+# Settings:
+#
+focus_on_window_activation focus
+focus_follows_mouse yes
+
+# Style related things
 include /etc/sway/config.d/*
