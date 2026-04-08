@@ -20,7 +20,7 @@ exec systemctl --user import-environment WAYLAND_DISPLAY DISPLAY XDG_CURRENT_DES
 exec dbus-update-activation-environment WAYLAND_DISPLAY DISPLAY XDG_CURRENT_DESKTOP SWAYSOCK I3SOCK XCURSOR_SIZE XCURSOR_THEME
 
 # Autostart applications
-exec_always pkill mako; mako
+exec pkill mako; mako
 exec $term --class=QuickTerm
 
 ### Output & Input Configuration
