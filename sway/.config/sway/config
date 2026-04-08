@@ -55,7 +55,7 @@ client.unfocused         $muted  $base    $muted  $base     $base
 bar {
     position top
     font $gui_font
-    status_command ~/.config/sway/scripts/status.sh
+    status_command ~/.config/sway/scripts/status
     pango_markup enabled
 
     tray_padding 2
