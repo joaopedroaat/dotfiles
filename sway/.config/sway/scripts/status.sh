@@ -148,6 +148,39 @@ get_vol() {
   echo "<span foreground='$clr'>$icon ${vol}%</span>"
 }
 
+get_mic() {
+  # 1. Try to get mute status. We hide errors (2>/dev/null) to gracefully handle missing mics.
+  mute_output=$(pactl get-source-mute @DEFAULT_SOURCE@ 2>/dev/null)
+
+  # 2. Handle "No Mic Found"
+  # If the command returned absolutely nothing, the audio server has no default source.
+  if [ -z "$mute_output" ]; then
+    echo "<span foreground='$COLOR_DIM'>󰍭 None</span>"
+    return
+  fi
+
+  # 3. Handle Muted State
+  if echo "$mute_output" | grep -q 'yes'; then
+    echo "<span foreground='$COLOR_DIM'>󰍭 Muted</span>"
+    return
+  fi
+
+  # 4. Extract Volume
+  vol=$(pactl get-source-volume @DEFAULT_SOURCE@ 2>/dev/null | grep -o '[0-9]*%' | head -n1 | tr -d '%')
+
+  # Fallback if extraction fails
+  if [ -z "$vol" ]; then
+    echo "<span foreground='$COLOR_DIM'>󰍭 ---</span>"
+    return
+  fi
+
+  # Change color to yellow/gold if mic is peaking/over-amplified (above 100%)
+  clr=$COLOR_TEXT
+  if [ "$vol" -gt 100 ]; then clr=$COLOR_WARN; fi
+
+  echo "<span foreground='$clr'>󰍬 ${vol}%</span>"
+}
+
 ### --- Main Execution ---
 while true; do
   COLOR_TEXT=$(get_color "text")
@@ -158,12 +191,13 @@ while true; do
 
   NET_MOD=$(get_net)
   VOL_MOD=$(get_vol)
+  MIC_MOD=$(get_mic)
   CPU_MOD=$(get_cpu)
   TMP_MOD=$(get_temp)
   RAM_MOD=$(get_ram)
   TIME_MOD=$(date +'%d-%m-%Y %H:%M:%S')
 
-  # Inserted VOL_MOD right after NET_MOD
-  echo "$NET_MOD | $VOL_MOD | $CPU_MOD $TMP_MOD | $RAM_MOD |  $TIME_MOD "
+  # Inserted MIC_MOD right next to VOL_MOD
+  echo "$NET_MOD | $VOL_MOD  $MIC_MOD | $CPU_MOD $TMP_MOD | $RAM_MOD |  $TIME_MOD "
   sleep 1
 done
