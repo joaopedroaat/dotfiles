@@ -21,6 +21,7 @@ exec dbus-update-activation-environment WAYLAND_DISPLAY DISPLAY XDG_CURRENT_DESK
 
 # Autostart applications
 exec pkill mako; mako
+exec pkill mpd-mpris; mpd-mpris
 exec $term --class=QuickTerm
 
 ### Output & Input Configuration

@@ -181,6 +181,42 @@ get_mic() {
   echo "<span foreground='$clr'>󰍬 ${vol}%</span>"
 }
 
+get_music() {
+  # Select target player: prefer mpd, fallback to any active player
+  if playerctl -l 2>/dev/null | grep -q "mpd"; then
+    target="mpd"
+  else
+    target="%any"
+  fi
+
+  # Get player status
+  status=$(playerctl --player="$target" status 2>/dev/null)
+  if [ "$status" != "Playing" ] && [ "$status" != "Paused" ]; then
+    return
+  fi
+
+  # Fetch metadata using template
+  info=$(playerctl --player="$target" metadata --format "{{ artist }} - {{ title }}" 2>/dev/null)
+
+  # Fallback for missing tags or streams
+  if [ "$info" = " - " ] || [ -z "$info" ]; then
+    info=$(playerctl --player="$target" metadata --format "{{ xesam:title }}" 2>/dev/null)
+  fi
+  [ -z "$info" ] && info="Unknown Source"
+
+  # Truncate string for bar stability
+  if [ ${#info} -gt 35 ]; then
+    display="$(echo "$info" | cut -c 1-32)..."
+  else
+    display="$info"
+  fi
+
+  # State-based icons
+  [ "$status" = "Playing" ] && icon="󰎈" || icon="󰏤"
+
+  echo "<span foreground='$COLOR_DIM'>$icon </span><span foreground='$COLOR_TEXT'>$display</span>"
+}
+
 ### --- Main Execution ---
 while true; do
   COLOR_TEXT=$(get_color "text")
@@ -190,6 +226,7 @@ while true; do
   COLOR_VPN=$(get_color "vpn")
 
   NET_MOD=$(get_net)
+  MUSIC_MOD=$(get_music)
   VOL_MOD=$(get_vol)
   MIC_MOD=$(get_mic)
   CPU_MOD=$(get_cpu)
@@ -197,7 +234,8 @@ while true; do
   RAM_MOD=$(get_ram)
   TIME_MOD=$(date +'%d-%m-%Y %H:%M:%S')
 
-  # Inserted MIC_MOD right next to VOL_MOD
-  echo "$NET_MOD | $VOL_MOD  $MIC_MOD | $CPU_MOD $TMP_MOD | $RAM_MOD |  $TIME_MOD "
+  [ -n "$MUSIC_MOD" ] && MUSIC_OUT="$MUSIC_MOD | " || MUSIC_OUT=""
+
+  echo "$MUSIC_OUT$NET_MOD | $VOL_MOD  $MIC_MOD | $CPU_MOD $TMP_MOD | $RAM_MOD |  $TIME_MOD "
   sleep 1
 done
