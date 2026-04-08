@@ -88,6 +88,13 @@ for_window [app_id="QuickTerm"] {
     scratchpad show
 }
 
+for_window [app_id="AudioControl"] {
+  floating enable
+  border pixel 2
+  resize set 800 600
+  move position center
+}
+
 # ==========================================
 # Key Bindings
 # ==========================================
@@ -105,6 +112,7 @@ bindsym $mod+Control+n exec makoctl restore
 bindsym $mod+t exec darkman toggle
 bindsym Print exec grim
 bindsym Control+Mod1+t exec $term --class=QuickTerm
+bindsym Control+Mod1+p exec $term --class=AudioControl -e pulsemixer
 
 ### Media & Hardware Keys
 bindsym --locked XF86AudioMute exec pactl set-sink-mute \@DEFAULT_SINK@ toggle
