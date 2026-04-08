@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Parâmetros
+LOCK_TIME=${1:-300}
+LOCK_CMD=${2:-swaylock}
+
+# Configuração: Desligar 60s após o lock
+OFF_DELAY=60
+OFF_TIMEOUT=$((LOCK_TIME + OFF_DELAY))
+
+# Notificação aparece 15s antes do lock
+NOTIFY_TIME=$((LOCK_TIME - 15))
+[ $NOTIFY_TIME -lt 1 ] && NOTIFY_TIME=1
+
+swayidle -w \
+  timeout $NOTIFY_TIME "notify-send -a 'System' -u critical 'Idle Warning' 'System will lock soon...'" \
+  resume "makoctl dismiss" \
+  timeout $LOCK_TIME "swaymsg exec '$LOCK_CMD'" \
+  timeout $OFF_TIMEOUT "swaymsg 'output * dpms off'" \
+  resume "swaymsg 'output * dpms on'" \
+  before-sleep "swaymsg exec '$LOCK_CMD'"
