@@ -1,0 +1,47 @@
+[mgr]
+prepend_keymap = [
+  { on = [
+    "b",
+    "l",
+  ], run = 'shell "swaybg-mngr --set-light \"$1\" && swaymsg reload"', desc = "Wallpaper: Set light & Reload" },
+  { on = [
+    "b",
+    "d",
+  ], run = 'shell "swaybg-mngr --set-dark \"$1\" && swaymsg reload"', desc = "Wallpaper: Set dark & Reload" },
+  { on = [
+    "g",
+    "h",
+  ], run = "cd ~", desc = "Go to Home" },
+  { on = [
+    "g",
+    "D",
+  ], run = "cd ~/Downloads", desc = "Go to Downloads" },
+  { on = [
+    "g",
+    "p",
+  ], run = "cd ~/Pictures", desc = "Go to Pictures" },
+  { on = [
+    "g",
+    "P",
+  ], run = "cd ~/Projects", desc = "Go to Projects" },
+  { on = [
+    "g",
+    "v",
+  ], run = "cd ~/Videos", desc = "Go to Videos" },
+  { on = [
+    "g",
+    "m",
+  ], run = "cd ~/Music", desc = "Go to Music" },
+  { on = [
+    "g",
+    "d",
+  ], run = "cd ~/Documents", desc = "Go to Documents" },
+  { on = [
+    "g",
+    "t",
+  ], run = "cd ~/.local/share/Trash/files", desc = "Go to Trash" },
+  { on = [
+    "g",
+    "c",
+  ], run = "cd ~/.config", desc = "Go to Config" },
+]
