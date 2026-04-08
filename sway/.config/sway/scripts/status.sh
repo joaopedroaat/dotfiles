@@ -121,6 +121,33 @@ get_net() {
   fi
 }
 
+get_vol() {
+  # Check if muted
+  mute=$(pactl get-sink-mute @DEFAULT_SINK@ 2>/dev/null | grep -o 'yes')
+  if [ "$mute" = "yes" ]; then
+    echo "<span foreground='$COLOR_DIM'>󰖁 Muted</span>"
+    return
+  fi
+
+  # Extract the volume percentage number
+  vol=$(pactl get-sink-volume @DEFAULT_SINK@ 2>/dev/null | grep -o '[0-9]*%' | head -n1 | tr -d '%')
+
+  # Fallback if audio server isn't responding
+  if [ -z "$vol" ]; then
+    echo "<span foreground='$COLOR_DIM'>󰝟 ---</span>"
+    return
+  fi
+
+  # Change color to yellow/gold if volume is pushed past 100% (over-amplified)
+  clr=$COLOR_TEXT
+  if [ "$vol" -gt 100 ]; then clr=$COLOR_WARN; fi
+
+  # Change icon based on volume level
+  [ "$vol" -ge 65 ] && icon="󰕾" || { [ "$vol" -ge 30 ] && icon="󰖀" || icon="󰕿"; }
+
+  echo "<span foreground='$clr'>$icon ${vol}%</span>"
+}
+
 ### --- Main Execution ---
 while true; do
   COLOR_TEXT=$(get_color "text")
@@ -130,11 +157,13 @@ while true; do
   COLOR_VPN=$(get_color "vpn")
 
   NET_MOD=$(get_net)
+  VOL_MOD=$(get_vol)
   CPU_MOD=$(get_cpu)
   TMP_MOD=$(get_temp)
   RAM_MOD=$(get_ram)
   TIME_MOD=$(date +'%d-%m-%Y %H:%M:%S')
 
-  echo "$NET_MOD | $CPU_MOD $TMP_MOD | $RAM_MOD |  $TIME_MOD "
+  # Inserted VOL_MOD right after NET_MOD
+  echo "$NET_MOD | $VOL_MOD | $CPU_MOD $TMP_MOD | $RAM_MOD |  $TIME_MOD "
   sleep 1
 done
