@@ -30,7 +30,7 @@ input type:keyboard {
 }
 
 # Display and wallpaper
-exec_always "which sway-bg-selector > /dev/null && sway-bg-selector --restore || swaymsg 'output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill'"
+exec_always "swaybg-mngr || swaymsg 'output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill'"
 
 ### UI & Appearance
 # Typography
