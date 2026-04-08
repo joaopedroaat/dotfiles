@@ -47,6 +47,7 @@ light)
 esac
 
 # --- Apply Changes Live ---
+export $(systemctl --user show-environment | grep -E '^WAYLAND_DISPLAY|^SWAYSOCK')
 makoctl reload
 swaymsg reload
 

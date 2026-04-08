@@ -15,10 +15,13 @@ set $menu wmenu-run
 exec_always [ ! -e ~/.config/sway/themes/sway_current.conf ] && ln -s ~/.config/sway/themes/sway_dark.conf ~/.config/sway/themes/sway_current.conf
 include ~/.config/sway/themes/sway_current.conf
 
+# Systemd and dbus activation environments
+exec systemctl --user import-environment WAYLAND_DISPLAY DISPLAY XDG_CURRENT_DESKTOP SWAYSOCK I3SOCK XCURSOR_SIZE XCURSOR_THEME
+exec dbus-update-activation-environment WAYLAND_DISPLAY DISPLAY XDG_CURRENT_DESKTOP SWAYSOCK I3SOCK XCURSOR_SIZE XCURSOR_THEME
+
 # Autostart applications
 exec ghostty --initial-window=false
 exec_always pkill mako; mako
-exec darkman run
 
 ### Output & Input Configuration
 input type:keyboard {
