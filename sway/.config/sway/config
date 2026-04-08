@@ -257,5 +257,53 @@ for_window [title="Wallpaper Selector"] {
 focus_on_window_activation focus
 focus_follows_mouse yes
 
-# Style related things
-include /etc/sway/config.d/*
+### --- Theme Bootstrapping ---
+# Ensure the symlink exists so Sway doesn't crash on first boot
+exec_always [ ! -e ~/.config/sway/themes/sway_current.conf ] && ln -s ~/.config/sway/themes/sway_dark.conf ~/.config/sway/themes/sway_current.conf
+
+# Load the dynamic theme
+include ~/.config/sway/themes/sway_current.conf
+
+### --- UI & Typography ---
+set $gui_font pango:JetBrainsMono Nerd Font 10
+font $gui_font
+
+default_border pixel 1
+default_floating_border normal
+
+### --- Layout & Compact Gaps ---
+gaps inner 5
+
+gaps outer 2
+
+smart_gaps on
+
+# Keep borders clean
+smart_borders on
+
+### --- Window Decorations (Tightened) ---
+# target                 border  bg      text    indicator child_border
+client.focused           $iris   $base   $text   $rose     $iris
+client.focused_inactive  $muted  $surface $subtle $muted    $muted
+client.unfocused         $muted  $base   $muted  $base     $base
+
+### --- Status Bar (Refined Separation) ---
+bar {
+    position top
+    font $gui_font
+    status_command ~/.config/sway/scripts/status.sh
+    pango_markup enabled
+
+    tray_padding 2
+
+    colors {
+        background         $overlay
+        statusline         $text
+        separator          $iris
+
+        #                  border    bg        text
+        focused_workspace  $iris     $iris     $base
+        active_workspace   $surface  $surface  $text
+        inactive_workspace $overlay  $overlay  $muted
+    }
+}
