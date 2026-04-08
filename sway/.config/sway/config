@@ -21,6 +21,7 @@ exec dbus-update-activation-environment WAYLAND_DISPLAY DISPLAY XDG_CURRENT_DESK
 
 # Autostart applications
 exec_always pkill mako; mako
+exec $term --class=QuickTerm
 
 ### Output & Input Configuration
 input type:keyboard {
@@ -77,6 +78,16 @@ focus_follows_mouse yes
 
 # Specific window rules
 
+# Quick Terminal
+for_window [app_id="QuickTerm"] {
+    floating enable
+    border pixel 2
+    resize set 800 600
+    move position center
+    move scratchpad
+    scratchpad show
+}
+
 # ==========================================
 # Key Bindings
 # ==========================================
@@ -93,6 +104,7 @@ bindsym $mod+Shift+n exec makoctl dismiss
 bindsym $mod+Control+n exec makoctl restore
 bindsym $mod+t exec darkman toggle
 bindsym Print exec grim
+bindsym Control+Mod1+t exec $term --class=QuickTerm
 
 ### Media & Hardware Keys
 bindsym --locked XF86AudioMute exec pactl set-sink-mute \@DEFAULT_SINK@ toggle
