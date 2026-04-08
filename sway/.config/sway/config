@@ -11,6 +11,10 @@ set $right l
 set $term kitty
 set $menu wmenu-run
 
+set $script_dir ~/.config/sway/scripts/
+set $status_command $script_dir/status
+set $lock_command $script_dir/lock
+
 # Theme bootstrapping
 exec_always [ ! -e ~/.config/sway/themes/sway_current.conf ] && ln -s ~/.config/sway/themes/sway_dark.conf ~/.config/sway/themes/sway_current.conf
 include ~/.config/sway/themes/sway_current.conf
@@ -62,7 +66,7 @@ client.urgent            $love    $base    $text   $gold     $love
 bar {
     position top
     font $gui_font
-    status_command ~/.config/sway/scripts/status
+    status_command "$status_command || while date +'%d-%m-%Y %H:%M:%S'; do sleep 1; done"
     pango_markup enabled
 
     tray_padding 2
@@ -147,6 +151,7 @@ bindsym $mod+d exec $menu
 bindsym $mod+Shift+q kill
 bindsym $mod+Shift+c reload
 bindsym $mod+Shift+e exec swaynag -t warning -m 'Exit sway and end Wayland session?' -B 'Yes, exit' 'swaymsg exit'
+bindsym $mod+Escape exec "$lock_command || swaylock -c '$base'"
 
 ### Notifications & Utilities
 bindsym $mod+Shift+n exec makoctl dismiss

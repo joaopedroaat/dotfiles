@@ -1,0 +1,58 @@
+#!/bin/bash
+
+# Path to the active theme configuration
+THEME_FILE="$HOME/.config/sway/themes/sway_current.conf"
+
+get_color() {
+  target_var=$1
+  # Extract hex value from theme file
+  color=$(grep -i "set \$$target_var" "$THEME_FILE" 2>/dev/null | awk '{print $3}' | head -n 1)
+
+  # Fallback values if variable is missing
+  if [ -z "$color" ]; then
+    case "$1" in
+    "base") echo "#191724" ;;
+    "text") echo "#e0def4" ;;
+    "iris") echo "#c4a7e7" ;;
+    "rose") echo "#ebbcba" ;;
+    "love") echo "#eb6f92" ;;
+    "gold") echo "#f6c177" ;;
+    "foam") echo "#9ccfd8" ;;
+    "surface") echo "#1f1d2e" ;;
+    *) echo "#ffffff" ;;
+    esac
+  else
+    echo "$color"
+  fi
+}
+
+# Resolve theme colors
+BASE=$(get_color "base")
+TEXT=$(get_color "text")
+IRIS=$(get_color "iris")
+ROSE=$(get_color "rose")
+LOVE=$(get_color "love")
+GOLD=$(get_color "gold")
+FOAM=$(get_color "foam")
+SURFACE=$(get_color "surface")
+
+# Execute swaylock with dynamic theme parameters
+swaylock \
+  --indicator-radius 100 \
+  --indicator-thickness 7 \
+  --ignore-empty-password \
+  --show-failed-attempts \
+  --color "$BASE" \
+  --ring-color "$IRIS" \
+  --inside-color "$BASE" \
+  --text-color "$TEXT" \
+  --line-color "$BASE" \
+  --key-hl-color "$ROSE" \
+  --ring-ver-color "$FOAM" \
+  --inside-ver-color "$BASE" \
+  --ring-wrong-color "$LOVE" \
+  --inside-wrong-color "$BASE" \
+  --ring-clear-color "$GOLD" \
+  --inside-clear-color "$BASE" \
+  --bs-hl-color "$LOVE" \
+  --separator-color "$SURFACE"
