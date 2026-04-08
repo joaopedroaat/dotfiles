@@ -19,6 +19,31 @@ add_to_path() {
 # Add local binaries to PATH
 add_to_path "$HOME/.local/bin"
 
+# --- Setup ---
+
+# Create .local/bin if it doesn't exist
+if [ ! -d "$HOME/.local/bin" ]; then
+  mkdir -p "$HOME/.local/bin"
+fi
+
+# Setup default terminal
+for term_cmd in kitty foot ghostty xterm; do
+  if command -v "$term_cmd" >/dev/null 2>&1; then
+    export TERMINAL="$term_cmd"
+    break
+  fi
+done
+
+# Detect the best available editor
+for editor_cmd in nvim vim vi nano; do
+  if command -v "$editor_cmd" >/dev/null 2>&1; then
+    export EDITOR="$editor_cmd"
+    export VISUAL="$editor_cmd"
+    [ "$editor_cmd" = "nvim" ] && alias vim="nvim" && alias vi="nvim"
+    break
+  fi
+done
+
 # --- Homebrew Setup ---
 # Homebrew must be loaded early so other tools (fnm, fzf) can be detected
 if [ -f "/home/linuxbrew/.linuxbrew/bin/brew" ]; then
