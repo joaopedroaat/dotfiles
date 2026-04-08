@@ -110,9 +110,21 @@ bindsym $mod+Shift+e exec swaynag -t warning -m 'Exit sway and end Wayland sessi
 bindsym $mod+Shift+n exec makoctl dismiss
 bindsym $mod+Control+n exec makoctl restore
 bindsym $mod+t exec darkman toggle
-bindsym Print exec grim
 bindsym Control+Mod1+t exec $term --class=QuickTerm
 bindsym Control+Mod1+p exec $term --class=AudioControl -e pulsemixer
+
+### Screenshots
+# 1. Full Screen
+# Print = Save to file
+bindsym Print exec grim
+# Shift + Print = Copy to clipboard
+bindsym Shift+Print exec grim - | wl-copy
+
+# 2. Select Region or Window
+# Mod + Print = Save selected area to file
+bindsym $mod+Print exec grim -g "$(slurp)"
+# Mod + Shift + Print = Copy selected area to clipboard
+bindsym $mod+Shift+Print exec grim -g "$(slurp)" - | wl-copy
 
 ### Media & Hardware Keys
 bindsym --locked XF86AudioMute exec pactl set-sink-mute \@DEFAULT_SINK@ toggle
