@@ -130,6 +130,13 @@ for_window [app_id="TaskManager"] {
     scratchpad show
 }
 
+for_window [app_id="popup"] {
+    floating enable
+    border pixel 2
+    resize set 1250 750
+    move position center
+}
+
 # ==========================================
 # Key Bindings
 # ==========================================
