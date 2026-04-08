@@ -8,7 +8,7 @@ set $left h
 set $down j
 set $up k
 set $right l
-set $term ghostty
+set $term kitty
 set $menu wmenu-run
 
 # Theme bootstrapping
@@ -20,7 +20,6 @@ exec systemctl --user import-environment WAYLAND_DISPLAY DISPLAY XDG_CURRENT_DES
 exec dbus-update-activation-environment WAYLAND_DISPLAY DISPLAY XDG_CURRENT_DESKTOP SWAYSOCK I3SOCK XCURSOR_SIZE XCURSOR_THEME
 
 # Autostart applications
-exec GTK_IM_MODULE=simple ghostty --initial-window=false
 exec_always pkill mako; mako
 
 ### Output & Input Configuration
@@ -77,14 +76,6 @@ focus_on_window_activation focus
 focus_follows_mouse yes
 
 # Specific window rules
-for_window [title="Wallpaper Selector"] {
-    floating enable
-    sticky enable
-    border pixel 2
-    resize set 800 600
-    move position center
-    focus
-}
 
 # ==========================================
 # Key Bindings
@@ -100,7 +91,6 @@ bindsym $mod+Shift+e exec swaynag -t warning -m 'Exit sway and end Wayland sessi
 ### Notifications & Utilities
 bindsym $mod+Shift+n exec makoctl dismiss
 bindsym $mod+Control+n exec makoctl restore
-bindsym $mod+Shift+b exec "which sway-bg-selector > /dev/null && ghostty --title='Wallpaper Selector' -e sway-bg-selector"
 bindsym $mod+t exec darkman toggle
 bindsym Print exec grim
 
