@@ -95,6 +95,16 @@ for_window [app_id="AudioControl"] {
   move position center
 }
 
+
+for_window [app_id="FileExplorer"] {
+  floating enable
+  border pixel 2
+  resize set 800 600
+  move position center
+  move scratchpad
+  scratchpad show
+}
+
 # ==========================================
 # Key Bindings
 # ==========================================
@@ -112,6 +122,7 @@ bindsym $mod+Control+n exec makoctl restore
 bindsym $mod+t exec darkman toggle
 bindsym Control+Mod1+t exec $term --class=QuickTerm
 bindsym Control+Mod1+p exec $term --class=AudioControl -e pulsemixer
+bindsym Control+Mod1+e exec $term --class=FileExplorer -e yazi
 
 ### Screenshots
 # 1. Full Screen
