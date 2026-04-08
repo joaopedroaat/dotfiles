@@ -28,8 +28,9 @@ dark)
   # FIX: Set high temp to +1 of low temp to bypass the check
   wlsunset -T $((NIGHT_TMP + 1)) -t $NIGHT_TMP >/dev/null 2>&1 &
 
-  TITLE="󰖔  evening"
-  MSG="dark theme • $NIGHT_TMP K"
+  TITLE="System Appearance"
+  MSG="🌙 Evening mode active\nTemperature set to <b>$NIGHT_TMP K</b>"
+  ICON="weather-night"
   ;;
 
 light)
@@ -45,8 +46,9 @@ light)
   # FIX: Set high temp to +1 of low temp to bypass the check
   wlsunset -T $((DAY_TMP + 1)) -t $DAY_TMP >/dev/null 2>&1 &
 
-  TITLE="󰖙  daylight"
-  MSG="light theme • $DAY_TMP K"
+  TITLE="System Appearance"
+  MSG="☀️ Daylight mode active\nTemperature set to <b>$DAY_TMP K</b>"
+  ICON="weather-clear"
   ;;
 esac
 
