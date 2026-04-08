@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ### --- Configuration ---
 THEME_FILE="$HOME/.config/sway/themes/sway_current.conf"
@@ -71,17 +71,17 @@ get_temp() {
 
 get_ram() {
   # Let awk do all the grabbing and math in one single extremely fast process
-  read used total perc gib <<< $(free -m | awk '/Mem:/ {
+  read used total perc gib <<<$(free -m | awk '/Mem:/ {
       printf "%d %d %d %.1f\n", $3, $2, (100*$3/$2), ($3/1024)
   }')
-  
+
   clr=$COLOR_TEXT
-  if [ "$perc" -gt 80 ]; then 
+  if [ "$perc" -gt 80 ]; then
     clr=$COLOR_ALERT
-  elif [ "$perc" -gt 65 ]; then 
+  elif [ "$perc" -gt 65 ]; then
     clr=$COLOR_WARN
   fi
-  
+
   echo " <span foreground='$clr'>${gib}GiB</span>"
 }
 
