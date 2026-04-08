@@ -110,6 +110,12 @@ focus_on_window_activation focus
 focus_follows_mouse yes
 
 # Specific window rules
+for_window [app_id="oculante"] {
+    floating enable
+    border pixel 2
+    resize set 1250 750
+    move position center
+}
 
 # Quick Terminal
 for_window [app_id="QuickTerm"] {

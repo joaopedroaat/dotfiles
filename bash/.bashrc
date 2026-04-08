@@ -54,6 +54,11 @@ if command -v fzf >/dev/null 2>&1; then
   eval "$(fzf --bash)"
 fi
 
+# Initialize zoxide (Smarter cd command)
+if command -v zoxide >/dev/null 2>&1; then
+  eval "$(zoxide init bash --cmd cd)"
+fi
+
 # Keybinding for tmux-sessionizer (Ctrl-f)
 if command -v tmux-sessionizer >/dev/null 2>&1; then
   if [[ -n "$TMUX" ]]; then
@@ -68,26 +73,25 @@ fi
 # --- Aliases ---
 # Enable color support for common commands
 if [ -x /usr/bin/dircolors ]; then
-    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-    alias ls='ls --color=auto'
-    alias grep='grep --color=auto'
-    alias fgrep='fgrep --color=auto'
-    alias egrep='egrep --color=auto'
+  test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+  alias ls='ls --color=auto'
+  alias grep='grep --color=auto'
+  alias fgrep='fgrep --color=auto'
+  alias egrep='egrep --color=auto'
 fi
 
 # --- SSH Agent ---
 # Ensure a single SSH agent instance persists across shell sessions
 if [ -f "$HOME/.ssh/agent.env" ]; then
-  . "$HOME/.ssh/agent.env" > /dev/null
+  . "$HOME/.ssh/agent.env" >/dev/null
 fi
 
-if ! ps -p "$SSH_AGENT_PID" > /dev/null 2>&1; then
-  ssh-agent -s > "$HOME/.ssh/agent.env"
-  . "$HOME/.ssh/agent.env" > /dev/null
+if ! ps -p "$SSH_AGENT_PID" >/dev/null 2>&1; then
+  ssh-agent -s >"$HOME/.ssh/agent.env"
+  . "$HOME/.ssh/agent.env" >/dev/null
 fi
 
 # --- Autocompletion ---
 # Enable programmable completion features
-[[ $PS1 && ! ${BASH_COMPLETION_VERSINFO:-} && -f /usr/share/bash-completion/bash_completion ]] && \
+[[ $PS1 && ! ${BASH_COMPLETION_VERSINFO:-} && -f /usr/share/bash-completion/bash_completion ]] &&
   . /usr/share/bash-completion/bash_completion
-
