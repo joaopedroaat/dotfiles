@@ -115,7 +115,7 @@ for_window [app_id="RMPC"] {
 for_window [app_id="FileExplorer"] {
     floating enable
     border pixel 2
-    resize set 800 600
+    resize set 1250 750
     move position center
     move scratchpad
     scratchpad show
