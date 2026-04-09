@@ -235,6 +235,37 @@ get_idle() {
   fi
 }
 
+get_disk() {
+  output=""
+
+  # 1. df -h: Gets human-readable disk space.
+  # 2. -x tmpfs -x devtmpfs...: Ignores RAM disks and system virtual filesystems.
+  # 3. awk 'NR>1 && !seen[$1]++': Skips the header and removes duplicate block devices (fixes BTRFS spam).
+  while read -r dev perc mount; do
+    # Remove the % sign from the percentage so we can do math on it
+    clean_perc="${perc%\%}"
+
+    # Determine color based on usage
+    clr=$COLOR_TEXT
+    if [ "$clean_perc" -gt 85 ]; then
+      clr=$COLOR_ALERT
+    elif [ "$clean_perc" -gt 70 ]; then
+      clr=$COLOR_WARN
+    fi
+
+    # Create a short name for the bar
+    # If it's the root directory (/), keep it as "/"
+    short_mount=$(basename "$mount")
+    [ "$short_mount" = "/" ] || [ -z "$short_mount" ] && short_mount="/"
+
+    # Append to our final output string
+    output="$output 󰋊 $short_mount <span foreground='$clr'>${clean_perc}%</span>  "
+
+  done < <(df -h -x tmpfs -x devtmpfs -x efivarfs -x squashfs -x zram 2>/dev/null | awk 'NR>1 && !seen[$1]++ {print $1, $5, $6}')
+
+  echo "$output"
+}
+
 ### --- Main Execution ---
 while true; do
   COLOR_TEXT=$(get_color "text")
@@ -250,11 +281,12 @@ while true; do
   CPU_MOD=$(get_cpu)
   TMP_MOD=$(get_temp)
   RAM_MOD=$(get_ram)
+  DISK_MOD=$(get_disk)
   IDLE_MOD=$(get_idle)
   TIME_MOD=$(date +'%d-%m-%Y %H:%M:%S')
 
   [ -n "$MUSIC_MOD" ] && MUSIC_OUT="$MUSIC_MOD | " || MUSIC_OUT=""
 
-  echo "$MUSIC_OUT$NET_MOD | $VOL_MOD  $MIC_MOD | $CPU_MOD $TMP_MOD | $RAM_MOD | $IDLE_MOD |  $TIME_MOD "
+  echo "$MUSIC_OUT$NET_MOD | $VOL_MOD  $MIC_MOD | $CPU_MOD $TMP_MOD | $RAM_MOD | $DISK_MOD | $IDLE_MOD |  $TIME_MOD "
   sleep 1
 done
