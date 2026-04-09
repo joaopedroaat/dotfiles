@@ -62,26 +62,23 @@ exec_always "swaybg-mngr || swaymsg 'output * bg /usr/share/backgrounds/sway/Swa
 set $gui_font pango:JetBrainsMono Nerd Font 10
 font $gui_font
 
-# Borders and Gaps
-default_border pixel 1
-default_floating_border pixel 2
+default_border pixel 3
+default_floating_border pixel 3
 gaps inner 5
 gaps outer 2
 smart_gaps on
 smart_borders on
 
 # Layer Differentiators
-# Thicker borders and slight transparency for all windows to help floating windows pop
-for_window [floating] border pixel 2
-for_window [tiling] border pixel 1
-for_window [app_id=".*"] opacity 0.98
+for_window [floating] border pixel 3
+for_window [tiling] border pixel 3
 
 # Window Decorations
-# target                 border   bg       text    indicator child_border
-client.focused           $iris    $base    $text   $rose     $iris
-client.focused_inactive  $muted   $surface $subtle $muted    $muted
-client.unfocused         $muted   $base    $muted  $overlay  $muted
-client.urgent            $love    $base    $text   $gold     $love
+# target                 border    bg        text      indicator child_border
+client.focused           $iris     $surface  $text     $rose     $iris
+client.focused_inactive  $overlay  $base     $subtle   $overlay  $overlay
+client.unfocused         $overlay  $base     $subtle   $overlay  $overlay
+client.urgent            $love     $base     $text     $gold     $love
 
 ### Status Bar
 bar {
@@ -115,7 +112,6 @@ focus_follows_mouse yes
 
 for_window [app_id="oculante"] {
     floating enable
-    border pixel 2
     resize set 1250 750
     move position center
 }
@@ -123,7 +119,6 @@ for_window [app_id="oculante"] {
 # Quick Terminal
 for_window [app_id="QuickTerm"] {
     floating enable
-    border pixel 2
     resize set 800 600
     move position center
     move scratchpad
@@ -132,14 +127,12 @@ for_window [app_id="QuickTerm"] {
 
 for_window [app_id="AudioControl"] {
     floating enable
-    border pixel 2
     resize set 800 600
     move position center
 }
 
 for_window [app_id="RMPC"] {
     floating enable
-    border pixel 2
     resize set 1250 750
     move position center
     move scratchpad
@@ -148,7 +141,6 @@ for_window [app_id="RMPC"] {
 
 for_window [app_id="FileExplorer"] {
     floating enable
-    border pixel 2
     resize set 1250 750
     move position center
     move scratchpad
@@ -157,7 +149,6 @@ for_window [app_id="FileExplorer"] {
 
 for_window [app_id="TaskManager"] {
     floating enable
-    border pixel 2
     resize set 1250 750
     move position center
     move scratchpad
@@ -166,18 +157,10 @@ for_window [app_id="TaskManager"] {
 
 for_window [app_id="BluetoothCenter"] {
     floating enable
-    border pixel 2
     resize set 1250 750
     move position center
     move scratchpad
     scratchpad show
-}
-
-for_window [app_id="popup"] {
-    floating enable
-    border pixel 2
-    resize set 1250 750
-    move position center
 }
 
 # ==========================================
