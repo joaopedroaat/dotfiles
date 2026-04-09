@@ -164,6 +164,15 @@ for_window [app_id="TaskManager"] {
     scratchpad show
 }
 
+for_window [app_id="BluetoothCenter"] {
+    floating enable
+    border pixel 2
+    resize set 1250 750
+    move position center
+    move scratchpad
+    scratchpad show
+}
+
 for_window [app_id="popup"] {
     floating enable
     border pixel 2
@@ -195,6 +204,7 @@ bindsym Control+Mod1+p exec $term --class=AudioControl -e pulsemixer
 bindsym Control+Mod1+e exec $term --class=FileExplorer -e yazi
 bindsym Control+Mod1+m exec $term --class=RMPC -e rmpc
 bindsym Control+Mod1+Delete exec $term --class=TaskManager -e btop
+bindsym Control+Mod1+b exec $term --class=BluetoothCenter -e bluetui
 
 ### Screenshots
 # 1. Full Screen
