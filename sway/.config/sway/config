@@ -35,18 +35,19 @@ exec pkill mako; mako
 exec pkill mpd-mpris; mpd-mpris
 
 ### Idle Management
-set $lock_timeout 300
+set $lock_timeout 180
+set $sleep_timeout 600
 
-# Logic: Try external script with math; fallback to simple swayidle if script isn't executable
+# Kill existing swayidle and restart with custom script or fallback
 exec_always "pkill swayidle; \
-    if [ -x $idle_cmd ]; then \
-        $idle_cmd $lock_timeout \"$lock_cmd\"; \
-    else \
-        swayidle -w \
-            timeout $lock_timeout 'swaymsg exec \"$lock_cmd\"' \
-            before-sleep 'swaymsg exec \"$lock_cmd\"'; \
-    fi"
-
+  if [ -x $idle_cmd ]; then \
+      $idle_cmd --lock $lock_timeout --cmd '$lock_cmd' --sleep $sleep_timeout; \
+  else \
+      swayidle -w \
+          timeout $lock_timeout 'swaymsg exec \"$lock_cmd\"' \
+          timeout $sleep_timeout 'systemctl suspend' \
+          before-sleep 'swaymsg exec \"$lock_cmd\"'; \
+  fi"
 
 ### Output & Input Configuration
 input type:keyboard {

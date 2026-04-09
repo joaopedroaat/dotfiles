@@ -1,16 +1,45 @@
 #!/bin/bash
 
-# Parâmetros
-LOCK_TIME=${1:-300}
-LOCK_CMD=${2:-swaylock}
+# Default values
+LOCK_TIME=300
+LOCK_CMD="swaylock"
+SLEEP_TIMEOUT=900
 
-# Configuração: Desligar 60s após o lock
+# Parse flags
+while [[ "$#" -gt 0 ]]; do
+  case $1 in
+  --lock)
+    LOCK_TIME="$2"
+    shift
+    ;;
+  --cmd)
+    LOCK_CMD="$2"
+    shift
+    ;;
+  --sleep)
+    SLEEP_TIMEOUT="$2"
+    shift
+    ;;
+  *)
+    echo "Unknown parameter: $1"
+    exit 1
+    ;;
+  esac
+  shift
+done
+
+# Ensure sleep occurs after lock
+if [ "$SLEEP_TIMEOUT" -le "$LOCK_TIME" ]; then
+  SLEEP_TIMEOUT=$((LOCK_TIME + 300))
+fi
+
+# Screen off timing (60s after lock)
 OFF_DELAY=60
 OFF_TIMEOUT=$((LOCK_TIME + OFF_DELAY))
 
-# Notificação aparece 15s antes do lock
+# Notification timing (15s before lock)
 NOTIFY_TIME=$((LOCK_TIME - 15))
-[ $NOTIFY_TIME -lt 1 ] && NOTIFY_TIME=1
+[ "$NOTIFY_TIME" -lt 1 ] && NOTIFY_TIME=1
 
 swayidle -w \
   timeout $NOTIFY_TIME "notify-send -a 'System' -u critical 'Idle Warning' 'System will lock soon...'" \
@@ -18,4 +47,5 @@ swayidle -w \
   timeout $LOCK_TIME "swaymsg exec '$LOCK_CMD'" \
   timeout $OFF_TIMEOUT "swaymsg 'output * dpms off'" \
   resume "swaymsg 'output * dpms on'" \
+  timeout $SLEEP_TIMEOUT "systemctl suspend" \
   before-sleep "swaymsg exec '$LOCK_CMD'"
