@@ -111,7 +111,7 @@ focus_follows_mouse yes
 
 # Specific window rules
 
-for_window [instance="steamwebhelper" title="Friends List"] floating enable, resize set 300 600
+# for_window [instance="steamwebhelper" title="Friends List"] floating enable, resize set 300 600
 
 for_window [app_id="oculante"] {
     floating enable
