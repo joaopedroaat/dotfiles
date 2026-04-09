@@ -5,6 +5,9 @@ LOCK_TIME=300
 LOCK_CMD="swaylock"
 SLEEP_TIMEOUT=900
 
+# This file will act as our "Caffeine" switch
+INHIBIT_FILE="/tmp/caffeine_mode"
+
 # Parse flags
 while [[ "$#" -gt 0 ]]; do
   case $1 in
@@ -41,11 +44,15 @@ OFF_TIMEOUT=$((LOCK_TIME + OFF_DELAY))
 NOTIFY_TIME=$((LOCK_TIME - 15))
 [ "$NOTIFY_TIME" -lt 1 ] && NOTIFY_TIME=1
 
+# Reset Caffeine Mode on Start
+rm -f "$INHIBIT_FILE"
+
+# Run swayidle, checking for the inhibit file before triggering actions
 swayidle -w \
-  timeout $NOTIFY_TIME "notify-send -a 'System' -u critical 'Idle Warning' 'System will lock soon...'" \
+  timeout $NOTIFY_TIME "[ -f $INHIBIT_FILE ] || notify-send -a 'System' -u critical 'Idle Warning' 'System will lock soon...'" \
   resume "makoctl dismiss" \
-  timeout $LOCK_TIME "swaymsg exec '$LOCK_CMD'" \
-  timeout $OFF_TIMEOUT "swaymsg 'output * dpms off'" \
+  timeout $LOCK_TIME "[ -f $INHIBIT_FILE ] || swaymsg exec '$LOCK_CMD'" \
+  timeout $OFF_TIMEOUT "[ -f $INHIBIT_FILE ] || swaymsg 'output * dpms off'" \
   resume "swaymsg 'output * dpms on'" \
-  timeout $SLEEP_TIMEOUT "systemctl suspend" \
+  timeout $SLEEP_TIMEOUT "[ -f $INHIBIT_FILE ] || systemctl suspend" \
   before-sleep "swaymsg exec '$LOCK_CMD'"

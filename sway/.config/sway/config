@@ -183,6 +183,9 @@ bindsym $mod+Shift+c reload
 bindsym $mod+Shift+e exec swaynag -t warning -m 'Exit sway and end Wayland session?' -B 'Yes, exit' 'swaymsg exit'
 bindsym $mod+Escape exec "$lock_cmd"
 
+### Caffeine
+bindsym Control+Mod1+c exec "if [ -f /tmp/caffeine_mode ]; then rm /tmp/caffeine_mode && notify-send 'Caffeine Disabled'; else touch /tmp/caffeine_mode && notify-send 'Caffeine Enabled'; fi"
+
 ### Notifications & Utilities
 bindsym $mod+Shift+n exec makoctl dismiss
 bindsym $mod+Control+n exec makoctl restore

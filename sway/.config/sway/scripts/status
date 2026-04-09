@@ -217,6 +217,24 @@ get_music() {
   echo "<span foreground='$COLOR_DIM'>$icon </span><span foreground='$COLOR_TEXT'>$display</span>"
 }
 
+get_idle() {
+  # 1. Check if swayidle process is completely dead/killed
+  if ! pgrep -x "swayidle" >/dev/null; then
+    # Using COLOR_ALERT (love) and a "Power/Sleep Off" icon
+    echo "<span foreground='$COLOR_ALERT'>󰒲 Disabled</span>"
+    return
+  fi
+
+  # 2. Check for the caffeine override file
+  if [ -f "/tmp/caffeine_mode" ]; then
+    # Caffeine mode is active (Gold/Warn color)
+    echo "<span foreground='$COLOR_WARN'>󰅶 Caffeine</span>"
+  else
+    # Standard idle behavior is active (Subtle/Dim color)
+    echo "<span foreground='$COLOR_DIM'>󰒲 Active</span>"
+  fi
+}
+
 ### --- Main Execution ---
 while true; do
   COLOR_TEXT=$(get_color "text")
@@ -232,10 +250,11 @@ while true; do
   CPU_MOD=$(get_cpu)
   TMP_MOD=$(get_temp)
   RAM_MOD=$(get_ram)
+  IDLE_MOD=$(get_idle)
   TIME_MOD=$(date +'%d-%m-%Y %H:%M:%S')
 
   [ -n "$MUSIC_MOD" ] && MUSIC_OUT="$MUSIC_MOD | " || MUSIC_OUT=""
 
-  echo "$MUSIC_OUT$NET_MOD | $VOL_MOD  $MIC_MOD | $CPU_MOD $TMP_MOD | $RAM_MOD |  $TIME_MOD "
+  echo "$MUSIC_OUT$NET_MOD | $VOL_MOD  $MIC_MOD | $CPU_MOD $TMP_MOD | $RAM_MOD | $IDLE_MOD |  $TIME_MOD "
   sleep 1
 done
