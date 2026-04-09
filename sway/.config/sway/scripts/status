@@ -24,6 +24,31 @@ get_color() {
   fi
 }
 
+run_safe() {
+  local module_name=$1
+  # Run the module function passed as the first argument
+  local output=$($module_name 2>/dev/null)
+
+  # Check if the output is completely empty
+  if [ -z "$output" ]; then
+    echo "<span foreground='$COLOR_ALERT'>$module_name err</span>"
+    return
+  fi
+
+  # Basic check for unclosed spans: count opening and closing tags.
+  # If they don't match, Pango will break.
+  local open_spans=$(echo "$output" | grep -o "<span" | wc -l)
+  local close_spans=$(echo "$output" | grep -o "</span>" | wc -l)
+
+  if [ "$open_spans" -ne "$close_spans" ]; then
+    echo "<span foreground='$COLOR_ALERT'>$module_name syntax err</span>"
+    return
+  fi
+
+  # If everything looks good, return the actual output
+  echo "$output"
+}
+
 ### --- System Modules ---
 
 get_cpu() {
@@ -238,14 +263,16 @@ while true; do
   COLOR_DIM=$(get_color "subtle")
   COLOR_VPN=$(get_color "vpn")
 
-  NET_MOD=$(get_net)
-  VOL_MOD=$(get_vol)
-  MIC_MOD=$(get_mic)
-  CPU_MOD=$(get_cpu)
-  TMP_MOD=$(get_temp)
-  RAM_MOD=$(get_ram)
-  DISK_MOD=$(get_disk)
-  IDLE_MOD=$(get_idle)
+  # Use run_safe to execute each module independently
+  NET_MOD=$(run_safe "get_net")
+  VOL_MOD=$(run_safe "get_vol")
+  MIC_MOD=$(run_safe "get_mic")
+  CPU_MOD=$(run_safe "get_cpu")
+  TMP_MOD=$(run_safe "get_temp")
+  RAM_MOD=$(run_safe "get_ram")
+  DISK_MOD=$(run_safe "get_disk")
+  IDLE_MOD=$(run_safe "get_idle")
+
   TIME_MOD=$(date +'%d-%m-%Y %H:%M:%S')
 
   echo "$DISK_MOD | $CPU_MOD $TMP_MOD | $RAM_MOD | $VOL_MOD  $MIC_MOD | $IDLE_MOD |  $TIME_MOD " | sed 's/  *|/ |/g'
