@@ -1,14 +1,14 @@
 #!/bin/bash
 
-# Default values
+# Default configuration values
 LOCK_TIME=300
 LOCK_CMD="swaylock"
 SLEEP_TIMEOUT=900
 
-# This file will act as our "Caffeine" switch
+# Inhibit file location (persists until manual removal or system reboot via /tmp)
 INHIBIT_FILE="/tmp/caffeine_mode"
 
-# Parse flags
+# Parse command-line arguments
 while [[ "$#" -gt 0 ]]; do
   case $1 in
   --lock)
@@ -31,28 +31,25 @@ while [[ "$#" -gt 0 ]]; do
   shift
 done
 
-# Ensure sleep occurs after lock
+# Ensure system sleep occurs after screen lock
 if [ "$SLEEP_TIMEOUT" -le "$LOCK_TIME" ]; then
   SLEEP_TIMEOUT=$((LOCK_TIME + 300))
 fi
 
-# Screen off timing (60s after lock)
+# Display power management timing (60 seconds after lock)
 OFF_DELAY=60
 OFF_TIMEOUT=$((LOCK_TIME + OFF_DELAY))
 
-# Notification timing (15s before lock)
+# Lock warning notification timing (15 seconds prior to lock)
 NOTIFY_TIME=$((LOCK_TIME - 15))
 [ "$NOTIFY_TIME" -lt 1 ] && NOTIFY_TIME=1
 
-# Reset Caffeine Mode on Start
-rm -f "$INHIBIT_FILE"
-
-# Run swayidle, checking for the inhibit file before triggering actions
+# Execute swayidle with active media playback and inhibit file checks
 swayidle -w \
   timeout $NOTIFY_TIME "[ -f $INHIBIT_FILE ] || notify-send -a 'System' -u critical 'Idle Warning' 'System will lock soon...'" \
   resume "makoctl dismiss" \
   timeout $LOCK_TIME "[ -f $INHIBIT_FILE ] || swaymsg exec '$LOCK_CMD'" \
   timeout $OFF_TIMEOUT "[ -f $INHIBIT_FILE ] || swaymsg 'output * dpms off'" \
   resume "swaymsg 'output * dpms on'" \
-  timeout $SLEEP_TIMEOUT "[ -f $INHIBIT_FILE ] || systemctl suspend" \
+  timeout $SLEEP_TIMEOUT "[ -f $INHIBIT_FILE ] || playerctl -a status 2>/dev/null | grep -iq 'playing' || mpc status 2>/dev/null | grep -iq '\[playing\]' || systemctl suspend" \
   before-sleep "swaymsg exec '$LOCK_CMD'"
