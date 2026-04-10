@@ -275,6 +275,6 @@ while true; do
 
   TIME_MOD=$(date +'%d-%m-%Y %H:%M:%S')
 
-  echo "$DISK_MOD | $CPU_MOD $TMP_MOD | $RAM_MOD | $VOL_MOD  $MIC_MOD | $IDLE_MOD |  $TIME_MOD " | sed 's/  *|/ |/g'
+  echo "$DISK_MOD | $CPU_MOD $TMP_MOD | $RAM_MOD | $NET_MOD | $VOL_MOD $MIC_MOD | $IDLE_MOD |  $TIME_MOD " | sed 's/  *|/ |/g'
   sleep 1
 done
