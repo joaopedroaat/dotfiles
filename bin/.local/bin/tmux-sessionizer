@@ -2,59 +2,59 @@
 
 # Directories to scan for projects or configurations
 dirs_to_check=(
-    "$HOME"
-    "$HOME/Projects"
-    "$HOME/.local/bin"
-    "$HOME/.config"
+  "$HOME"
+  "$HOME/Projects"
+  "$HOME/.local/bin"
+  "$HOME/.config"
 )
 
 # Filter out non-existent directories to prevent find errors
 search_dirs=()
 for dir in "${dirs_to_check[@]}"; do
-    [[ -d "$dir" ]] && search_dirs+=("$dir")
+  [[ -d "$dir" ]] && search_dirs+=("$dir")
 done
 
 # Use first argument as path, otherwise launch fzf
 if [[ $# -eq 1 ]]; then
-    selected=$1
+  selected=$1
 else
-    [[ ${#search_dirs[@]} -eq 0 ]] && echo "No valid directories found." && exit 1
-    fzf_opts=()
-    if [[ -z "$TMUX" ]]; then
-        fzf_opts=(--height 60% --layout reverse --border rounded --margin 5%,10%)
-    fi
+  [[ ${#search_dirs[@]} -eq 0 ]] && echo "No valid directories found." && exit 1
+  fzf_opts=()
+  if [[ -z "$TMUX" ]]; then
+    fzf_opts=(--height 60% --layout reverse --border rounded --margin 5%,10%)
+  fi
 
-    # List active sessions first, then append directories so sessions appear at the top
-    selected=$( (
-        tmux list-sessions -F " #{session_name}" 2>/dev/null
-        find -L "${search_dirs[@]}" -maxdepth 1 -type d | sort -u
-    ) | fzf "${fzf_opts[@]}" )
+  # List active sessions first, then append directories so sessions appear at the top
+  selected=$( (
+    tmux list-sessions -F " #{session_name}" 2>/dev/null
+    find -L "${search_dirs[@]}" -maxdepth 1 -type d | sort -u
+  ) | fzf "${fzf_opts[@]}")
 fi
 
 [[ -z $selected ]] && exit 0
 
 # Handle active session selection vs directory selection
 if [[ "$selected" == *" "* ]]; then
-    # Extract session name by stripping the icon and space
-    selected_name=${selected#* }
+  # Extract session name by stripping the icon and space
+  selected_name=${selected#* }
 else
-    # Check if the selected path is the home directory
-    if [[ "$selected" == "$HOME" ]]; then
-        selected_name="home"
-    else
-        # Sanitize session name: get folder name and replace dots with underscores
-        selected_name=$(basename "$selected" | tr . _)
-    fi
+  # Check if the selected path is the home directory
+  if [[ "$selected" == "$HOME" ]]; then
+    selected_name="home"
+  else
+    # Sanitize session name: get folder name and replace dots with underscores
+    selected_name=$(basename "$selected" | tr . _)
+  fi
 
-    # Create the session in the background if it doesn't already exist
-    if ! tmux has-session -t="$selected_name" 2> /dev/null; then
-        tmux new-session -ds "$selected_name" -c "$selected"
-    fi
+  # Create the session in the background if it doesn't already exist
+  if ! tmux has-session -t="$selected_name" 2>/dev/null; then
+    tmux new-session -ds "$selected_name" -c "$selected"
+  fi
 fi
 
 # If outside tmux, attach to the session; if inside, switch the client
 if [[ -z $TMUX ]]; then
-    tmux attach-session -t "$selected_name"
+  tmux attach-session -t "$selected_name"
 else
-    tmux switch-client -t "$selected_name"
+  tmux switch-client -t "$selected_name"
 fi
