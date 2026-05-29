@@ -1,5 +1,15 @@
 #!/usr/bin/env bash
 
+missing=()
+for cmd in tmux fzf; do
+  command -v "$cmd" &>/dev/null || missing+=("$cmd")
+done
+if [[ ${#missing[@]} -gt 0 ]]; then
+  echo "tmux-sessionizer: missing required dependencies: ${missing[*]}" >&2
+  echo "Install with your package manager, e.g.: sudo apt install ${missing[*]}" >&2
+  exit 1
+fi
+
 # Directories to scan for projects or configurations
 dirs_to_check=(
   "$HOME"
