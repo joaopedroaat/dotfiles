@@ -21,6 +21,9 @@ add_to_path() {
 [ ! -d "$HOME/.local/bin" ] && mkdir -p "$HOME/.local/bin"
 add_to_path "$HOME/.local/bin"
 
+# Add Mason (Neovim package manager) binaries to PATH
+add_to_path "$HOME/.local/share/nvim/mason/bin"
+
 # =============================================================================
 # SHELL BEHAVIOR & HISTORY
 # =============================================================================
